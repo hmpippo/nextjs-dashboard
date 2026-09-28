@@ -4,7 +4,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import postgres from "postgres";
-import { signIn } from "@/auth";
+import { auth, signIn } from "@/auth";
 import { AuthError } from "next-auth";
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
@@ -36,6 +36,11 @@ export type State = {
 };
 
 export async function createInvoice(prevState: State, formData: FormData) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get("customerId"),
     amount: formData.get("amount"),
@@ -76,6 +81,11 @@ export async function updateInvoice(
   prevState: State,
   formData: FormData,
 ) {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get("customerId"),
     amount: formData.get("amount"),
@@ -111,7 +121,10 @@ export async function updateInvoice(
 }
 
 export async function deleteInvoice(id: string) {
-  // throw new Error("Failed to Delete Invoice");
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
 
   await sql`DELETE FROM invoices WHERE id = ${id}`;
   revalidatePath("/dashboard");
