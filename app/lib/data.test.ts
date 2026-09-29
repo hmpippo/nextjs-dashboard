@@ -38,7 +38,9 @@ describe("data access functions", () => {
     const error = new Error("db unavailable");
     sqlMock.mockRejectedValueOnce(error);
 
-    await expect(fetchRevenue()).rejects.toThrow("Failed to fetch revenue data.");
+    await expect(fetchRevenue()).rejects.toThrow(
+      "Failed to fetch revenue data.",
+    );
     expect(console.error).toHaveBeenCalledWith("Database Error:", error);
   });
 

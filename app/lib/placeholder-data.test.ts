@@ -12,8 +12,8 @@ describe("placeholder data", () => {
   it("references existing customers from every invoice", () => {
     const customerIds = new Set(customers.map(({ id }) => id));
 
-    expect(invoices.every(({ customer_id }) => customerIds.has(customer_id))).toBe(
-      true,
-    );
+    expect(
+      invoices.every(({ customer_id }) => customerIds.has(customer_id)),
+    ).toBe(true);
   });
 });

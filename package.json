@@ -5,6 +5,8 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "lint": "eslint .",
+    "format": "prettier --write \"app/**/*.{ts,tsx}\" \"*.{json,ts,mjs}\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"*.{json,ts,mjs}\" \".github/workflows/*.yml\"",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -34,6 +36,7 @@
     "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.6",
+    "prettier": "^3.9.9",
     "vitest": "^5.0.2"
   }
 }

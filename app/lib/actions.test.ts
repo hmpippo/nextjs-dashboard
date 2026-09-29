@@ -1,12 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const {
-  sqlMock,
-  authMock,
-  signInMock,
-  revalidatePathMock,
-  redirectMock,
-} = vi.hoisted(() => ({
+const { sqlMock, authMock, signInMock, revalidatePathMock, redirectMock } =
+  vi.hoisted(() => ({
     sqlMock: vi.fn(),
     authMock: vi.fn(),
     signInMock: vi.fn(),
@@ -205,8 +200,13 @@ describe("authenticate", () => {
   it("returns undefined after successful sign-in", async () => {
     signInMock.mockResolvedValueOnce(undefined);
 
-    await expect(authenticate(undefined, makeFormData())).resolves.toBeUndefined();
-    expect(signInMock).toHaveBeenCalledWith("credentials", expect.any(FormData));
+    await expect(
+      authenticate(undefined, makeFormData()),
+    ).resolves.toBeUndefined();
+    expect(signInMock).toHaveBeenCalledWith(
+      "credentials",
+      expect.any(FormData),
+    );
   });
 
   it("returns the credentials error message", async () => {

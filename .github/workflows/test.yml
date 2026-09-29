@@ -1,0 +1,81 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit tests and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests and coverage
+        run: pnpm test:coverage
+
+      - name: Add coverage to job summary
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const reportPath = "reports/junit.xml";
+          const summaryPath = "coverage/coverage-summary.json";
+          if (fs.existsSync(reportPath)) {
+            const report = fs.readFileSync(reportPath, "utf8");
+            const attributes = report.match(/<testsuites\b([^>]*)>/)?.[1] ?? "";
+            const count = (name) =>
+              Number(attributes.match(new RegExp(`${name}="(\\d+)"`))?.[1] ?? 0);
+            const tests = count("tests");
+            const failures = count("failures") + count("errors");
+            fs.appendFileSync(
+              process.env.GITHUB_STEP_SUMMARY,
+              `## Unit test results\n\n${failures === 0 ? "Passed" : "Failed"}: ${tests - failures}/${tests} tests (${failures} failures)\n\n`,
+            );
+          } else {
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "JUnit test report was not generated.\n\n");
+          }
+          if (!fs.existsSync(summaryPath)) {
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "Coverage report was not generated.\n");
+            process.exit(0);
+          }
+          const { total } = JSON.parse(fs.readFileSync(summaryPath, "utf8"));
+          const rows = ["lines", "statements", "functions", "branches"]
+            .map((metric) => `| ${metric} | ${total[metric].pct}% | ${total[metric].covered}/${total[metric].total} |`)
+            .join("\n");
+          fs.appendFileSync(
+            process.env.GITHUB_STEP_SUMMARY,
+            `## Coverage\n\n| Metric | Coverage | Covered |\n| --- | ---: | ---: |\n${rows}\n`,
+          );
+          NODE
+
+      - name: Upload test and coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-and-coverage-reports
+          path: |
+            reports/junit.xml
+            coverage/index.html
+            coverage/coverage-summary.json
+          if-no-files-found: warn

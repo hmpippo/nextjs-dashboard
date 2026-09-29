@@ -61,14 +61,6 @@ describe("generatePagination", () => {
   });
 
   it("shows neighboring pages in the middle", () => {
-    expect(generatePagination(5, 10)).toEqual([
-      1,
-      "...",
-      4,
-      5,
-      6,
-      "...",
-      10,
-    ]);
+    expect(generatePagination(5, 10)).toEqual([1, "...", 4, 5, 6, "...", 10]);
   });
 });

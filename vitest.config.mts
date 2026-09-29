@@ -3,6 +3,10 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "node",
+    reporters: ["default", "junit"],
+    outputFile: {
+      junit: "reports/junit.xml",
+    },
     coverage: {
       provider: "v8",
       include: [
@@ -12,7 +16,7 @@ export default defineConfig({
         "app/lib/utils.ts",
       ],
       exclude: ["**/*.test.ts"],
-      reporter: ["text", "html"],
+      reporter: ["text", "html", "json-summary"],
       thresholds: {
         lines: 100,
         functions: 100,
