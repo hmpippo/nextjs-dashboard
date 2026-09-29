@@ -5,11 +5,13 @@
     "dev": "next dev --turbopack",
     "start": "next start",
     "lint": "eslint .",
-    "format": "prettier --write \"app/**/*.{ts,tsx}\" \"*.{json,ts,mjs}\" \".github/workflows/*.yml\"",
-    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"*.{json,ts,mjs}\" \".github/workflows/*.yml\"",
+    "format": "prettier --write \"app/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"*.{json,ts,mjs}\" \".github/workflows/*.yml\"",
+    "format:check": "prettier --check \"app/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"*.{json,ts,mjs}\" \".github/workflows/*.yml\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -29,6 +31,7 @@
     "zod": "^3.25.17"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
