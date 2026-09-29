@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
+  globalTimeout: process.env.CI ? 180_000 : 0,
   retries: process.env.CI ? 2 : 0,
   reporter: [
     ["list"],
@@ -25,12 +26,16 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev --hostname 127.0.0.1",
+    command: "pnpm exec next dev --webpack --hostname 127.0.0.1",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     env: {
       AUTH_SECRET: "local-playwright-test-secret",
       POSTGRES_URL: "postgres://test:test@127.0.0.1:5432/test",
+    },
+    gracefulShutdown: {
+      signal: "SIGTERM",
+      timeout: 1_000,
     },
     timeout: 120_000,
   },
